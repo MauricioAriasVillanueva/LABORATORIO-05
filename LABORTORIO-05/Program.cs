@@ -35,8 +35,40 @@ int totalProductos = 0;
             Console.WriteLine("===== REGISTRO DE PRODUCTOS =====");
             Console.WriteLine("Ingrese el código del producto:");
             codigos[totalProductos] = Console.ReadLine() ?? "";
+
+            if (string.IsNullOrWhiteSpace(codigos[totalProductos]))
+            {
+                Console.WriteLine("Código inválido. No puede estar vacío.");
+                break;
+            }
+
+            bool codigoExistente = false;
+
+            for (int i = 0; i < totalProductos; i++)
+            {
+                if (string.Equals(codigos[i], codigos[totalProductos], StringComparison.OrdinalIgnoreCase))
+                {
+                    codigoExistente = true;
+                    break;
+                }
+            }
+
+            if (codigoExistente)
+            {
+                Console.WriteLine("Código de producto ya existe.");
+                break;
+            }
+
             Console.WriteLine("Ingrese el nombre del producto:");
             nombres[totalProductos] = Console.ReadLine() ?? "";
+
+
+            if (string.IsNullOrWhiteSpace(nombres[totalProductos]))
+            {
+                Console.WriteLine("Nombre inválido. No puede estar vacío.");
+                break;
+            }
+
             Console.WriteLine("Ingrese la cantidad del producto:");
 
             if (!int.TryParse(Console.ReadLine(), out cantidades[totalProductos]) || cantidades[totalProductos] < 0)
@@ -68,7 +100,30 @@ int totalProductos = 0;
             break;
 
         case 3:
-            // Lógica para buscar producto
+            Console.WriteLine("===== BÚSQUEDA DE PRODUCTO =====");
+            Console.WriteLine("Ingrese el código del producto a buscar:");
+            string codigoBusqueda = Console.ReadLine() ?? "";
+            bool encontrado = false;
+
+            for (int i = 0; i < totalProductos; i++)
+            {
+                if (string.Equals(codigos[i], codigoBusqueda, StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine($"Producto encontrado:");
+                    Console.WriteLine($"Código: {codigos[i]}");
+                    Console.WriteLine($"Nombre: {nombres[i]}");
+                    Console.WriteLine($"Cantidad: {cantidades[i]}");
+                    Console.WriteLine();
+                    encontrado = true;
+                    break;
+                }
+            }
+
+            if (!encontrado)
+            {
+                Console.WriteLine("Producto no encontrado.");
+            }
+
             break;
 
         case 4:
