@@ -36,8 +36,10 @@ if (File.Exists("datos/inventario.csv"))
         Console.WriteLine("1. Registrar Producto");
         Console.WriteLine("2. Mostrar Productos");
         Console.WriteLine("3. Buscar Producto");
-        Console.WriteLine("4. Guardar Productos");
-        Console.WriteLine("5. Salir");
+        Console.WriteLine("4. Guardar Productos (CSV)");
+        Console.WriteLine("5. Guardar Productos (Binario)");
+        Console.WriteLine("6. Leer Productos (Binario)");
+        Console.WriteLine("7. Salir");
 
         Console.Write("Seleccione una opción: ");
 
@@ -106,6 +108,7 @@ if (File.Exists("datos/inventario.csv"))
             break;
 
         case 2:
+
             if (totalProductos == 0)
             {
                 Console.WriteLine("No hay productos registrados.");
@@ -125,6 +128,7 @@ if (File.Exists("datos/inventario.csv"))
             break;
 
         case 3:
+
             Console.WriteLine("===== BÚSQUEDA DE PRODUCTO =====");
             Console.WriteLine("Ingrese el código del producto a buscar:");
             string codigoBusqueda = Console.ReadLine() ?? "";
@@ -152,6 +156,7 @@ if (File.Exists("datos/inventario.csv"))
             break;
 
         case 4:
+
             Directory.CreateDirectory("datos");
             using (StreamWriter writer = new StreamWriter("datos/inventario.csv"))
             {
@@ -167,6 +172,49 @@ if (File.Exists("datos/inventario.csv"))
             break;
 
         case 5:
+
+            Directory.CreateDirectory("datos");
+            using (BinaryWriter writer = new BinaryWriter(File.Open("datos/inventario.bin", FileMode.Create)))
+            {
+                writer.Write(totalProductos);
+                for (int i = 0; i < totalProductos; i++)
+                {
+                    writer.Write(codigos[i]);
+                    writer.Write(nombres[i]);
+                    writer.Write(cantidades[i]);
+                }
+            }
+            Console.WriteLine("Productos guardados en inventario.bin");
+            break;
+
+        case 6:
+
+            if (File.Exists("datos/inventario.bin"))
+            {
+                using (BinaryReader reader = new BinaryReader(File.Open("datos/inventario.bin", FileMode.Open)))
+                {
+                    int totalProductosLeidos = reader.ReadInt32();
+                    for (int i = 0; i < totalProductosLeidos; i++)
+                    {
+                        string codigoLeido = reader.ReadString();
+                        Console.WriteLine($"Código: {codigoLeido}");
+                        string nombreLeido = reader.ReadString();
+                        Console.WriteLine($"Nombre: {nombreLeido}");
+                        int cantidadLeida = reader.ReadInt32();
+                        Console.WriteLine($"Cantidad: {cantidadLeida}");
+                    }
+                }
+                Console.WriteLine("Productos leídos desde inventario.bin");
+            }
+            else
+            {
+                Console.WriteLine("No se encontró el archivo inventario.bin");
+            }
+
+            break;
+
+        case 7:
+
             Console.WriteLine("Saliendo del sistema...");
             break;
 
@@ -176,4 +224,4 @@ if (File.Exists("datos/inventario.csv"))
 
         }
 
-    }while (opcion != 5);
+    }while (opcion != 7);
