@@ -1,9 +1,33 @@
 ﻿using System;
+using System.IO;
 
 string[] codigos = new string[100];
 string[] nombres = new string[100];
 int[] cantidades = new int[100];
 int totalProductos = 0;
+
+if (File.Exists("datos/inventario.csv"))
+{
+    using (StreamReader reader = new StreamReader("datos/inventario.csv"))
+    {
+        string? line;
+        reader.ReadLine(); // Saltar la primera línea (encabezado)
+        while ((line = reader.ReadLine()) != null)
+        {
+            string[] partes = line.Split(',');
+            if (partes.Length == 3)
+            {
+                codigos[totalProductos] = partes[0];
+                nombres[totalProductos] = partes[1];
+                if (int.TryParse(partes[2], out int cantidad))
+                {
+                    cantidades[totalProductos] = cantidad;
+                }
+                totalProductos++;
+            }
+        }
+    }
+}
 
     int opcion;
     do
@@ -12,7 +36,8 @@ int totalProductos = 0;
         Console.WriteLine("1. Registrar Producto");
         Console.WriteLine("2. Mostrar Productos");
         Console.WriteLine("3. Buscar Producto");
-        Console.WriteLine("4. Salir");
+        Console.WriteLine("4. Guardar Productos");
+        Console.WriteLine("5. Salir");
 
         Console.Write("Seleccione una opción: ");
 
@@ -127,6 +152,21 @@ int totalProductos = 0;
             break;
 
         case 4:
+            Directory.CreateDirectory("datos");
+            using (StreamWriter writer = new StreamWriter("datos/inventario.csv"))
+            {
+                writer.WriteLine("Código,Nombre,Cantidad");
+                for (int i = 0; i < totalProductos; i++)
+                {
+                    writer.WriteLine($"{codigos[i]},{nombres[i]},{cantidades[i]}");
+                }
+            }
+
+            Console.WriteLine("Productos guardados en inventario.csv");
+
+            break;
+
+        case 5:
             Console.WriteLine("Saliendo del sistema...");
             break;
 
@@ -136,4 +176,4 @@ int totalProductos = 0;
 
         }
 
-    }while (opcion != 4);
+    }while (opcion != 5);
