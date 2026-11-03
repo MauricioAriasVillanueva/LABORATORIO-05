@@ -6,6 +6,10 @@ string[] nombres = new string[100];
 int[] cantidades = new int[100];
 int totalProductos = 0;
 
+CargarProductosCSV();
+
+void CargarProductosCSV()
+{
 if (File.Exists("datos/inventario.csv"))
 {
     using (StreamReader reader = new StreamReader("datos/inventario.csv"))
@@ -28,18 +32,12 @@ if (File.Exists("datos/inventario.csv"))
         }
     }
 }
+}
 
     int opcion;
     do
     {
-        Console.WriteLine("===== SISTEMA DE INVENTARIO =====");
-        Console.WriteLine("1. Registrar Producto");
-        Console.WriteLine("2. Mostrar Productos");
-        Console.WriteLine("3. Buscar Producto");
-        Console.WriteLine("4. Guardar Productos (CSV)");
-        Console.WriteLine("5. Guardar Productos (Binario)");
-        Console.WriteLine("6. Leer Productos (Binario)");
-        Console.WriteLine("7. Salir");
+        MostrarMenu();
 
         Console.Write("Seleccione una opción: ");
 
@@ -52,176 +50,202 @@ if (File.Exists("datos/inventario.csv"))
         switch(opcion)
         {
         case 1:
-
-            if (totalProductos >= codigos.Length)
-            {
-                Console.WriteLine("No se pueden registrar más productos. Capacidad máxima alcanzada.");
-                break;
-            }
-
-            Console.WriteLine("===== REGISTRO DE PRODUCTOS =====");
-            Console.WriteLine("Ingrese el código del producto:");
-            codigos[totalProductos] = Console.ReadLine() ?? "";
-
-            if (string.IsNullOrWhiteSpace(codigos[totalProductos]))
-            {
-                Console.WriteLine("Código inválido. No puede estar vacío.");
-                break;
-            }
-
-            bool codigoExistente = false;
-
-            for (int i = 0; i < totalProductos; i++)
-            {
-                if (string.Equals(codigos[i], codigos[totalProductos], StringComparison.OrdinalIgnoreCase))
-                {
-                    codigoExistente = true;
-                    break;
-                }
-            }
-
-            if (codigoExistente)
-            {
-                Console.WriteLine("Código de producto ya existe.");
-                break;
-            }
-
-            Console.WriteLine("Ingrese el nombre del producto:");
-            nombres[totalProductos] = Console.ReadLine() ?? "";
-
-
-            if (string.IsNullOrWhiteSpace(nombres[totalProductos]))
-            {
-                Console.WriteLine("Nombre inválido. No puede estar vacío.");
-                break;
-            }
-
-            Console.WriteLine("Ingrese la cantidad del producto:");
-
-            if (!int.TryParse(Console.ReadLine(), out cantidades[totalProductos]) || cantidades[totalProductos] < 0)
-            {
-                Console.WriteLine("Cantidad inválida. Ingrese un número entero mayor o igual a cero.");
-                break;
-            }
-
-            totalProductos++;
+            RegistrarProductos();
             break;
 
         case 2:
-
-            if (totalProductos == 0)
-            {
-                Console.WriteLine("No hay productos registrados.");
-            }
-            else
-            {
-                Console.WriteLine("===== LISTA DE PRODUCTOS =====");
-                for (int i = 0; i < totalProductos; i++)
-                {
-                    Console.WriteLine($"Código: {codigos[i]}");
-                    Console.WriteLine($"Nombre: {nombres[i]}");
-                    Console.WriteLine($"Cantidad: {cantidades[i]}");
-                    Console.WriteLine();
-                }
-            }
-
+            MostrarProductos();
             break;
 
         case 3:
-
-            Console.WriteLine("===== BÚSQUEDA DE PRODUCTO =====");
-            Console.WriteLine("Ingrese el código del producto a buscar:");
-            string codigoBusqueda = Console.ReadLine() ?? "";
-            bool encontrado = false;
-
-            for (int i = 0; i < totalProductos; i++)
-            {
-                if (string.Equals(codigos[i], codigoBusqueda, StringComparison.OrdinalIgnoreCase))
-                {
-                    Console.WriteLine($"Producto encontrado:");
-                    Console.WriteLine($"Código: {codigos[i]}");
-                    Console.WriteLine($"Nombre: {nombres[i]}");
-                    Console.WriteLine($"Cantidad: {cantidades[i]}");
-                    Console.WriteLine();
-                    encontrado = true;
-                    break;
-                }
-            }
-
-            if (!encontrado)
-            {
-                Console.WriteLine("Producto no encontrado.");
-            }
-
+            BuscarProducto();
             break;
 
         case 4:
-
-            Directory.CreateDirectory("datos");
-            using (StreamWriter writer = new StreamWriter("datos/inventario.csv"))
-            {
-                writer.WriteLine("Código,Nombre,Cantidad");
-                for (int i = 0; i < totalProductos; i++)
-                {
-                    writer.WriteLine($"{codigos[i]},{nombres[i]},{cantidades[i]}");
-                }
-            }
-
-            Console.WriteLine("Productos guardados en inventario.csv");
-
+            GuardarProductosCSV();
             break;
 
         case 5:
-
-            Directory.CreateDirectory("datos");
-            using (BinaryWriter writer = new BinaryWriter(File.Open("datos/inventario.bin", FileMode.Create)))
-            {
-                writer.Write(totalProductos);
-                for (int i = 0; i < totalProductos; i++)
-                {
-                    writer.Write(codigos[i]);
-                    writer.Write(nombres[i]);
-                    writer.Write(cantidades[i]);
-                }
-            }
-            Console.WriteLine("Productos guardados en inventario.bin");
+            GuardarProductosBinario();
             break;
 
         case 6:
-
-            if (File.Exists("datos/inventario.bin"))
-            {
-                using (BinaryReader reader = new BinaryReader(File.Open("datos/inventario.bin", FileMode.Open)))
-                {
-                    int totalProductosLeidos = reader.ReadInt32();
-                    for (int i = 0; i < totalProductosLeidos; i++)
-                    {
-                        string codigoLeido = reader.ReadString();
-                        Console.WriteLine($"Código: {codigoLeido}");
-                        string nombreLeido = reader.ReadString();
-                        Console.WriteLine($"Nombre: {nombreLeido}");
-                        int cantidadLeida = reader.ReadInt32();
-                        Console.WriteLine($"Cantidad: {cantidadLeida}");
-                    }
-                }
-                Console.WriteLine("Productos leídos desde inventario.bin");
-            }
-            else
-            {
-                Console.WriteLine("No se encontró el archivo inventario.bin");
-            }
-
+            LeerProductosBinario();
             break;
 
         case 7:
-
             Console.WriteLine("Saliendo del sistema...");
             break;
 
         default:
             Console.WriteLine("Opción no válida.");
             break;
-
         }
 
     }while (opcion != 7);
+
+void MostrarMenu()
+{
+        Console.WriteLine("===== SISTEMA DE INVENTARIO =====");
+        Console.WriteLine("1. Registrar Producto");
+        Console.WriteLine("2. Mostrar Productos");
+        Console.WriteLine("3. Buscar Producto");
+        Console.WriteLine("4. Guardar Productos (CSV)");
+        Console.WriteLine("5. Guardar Productos (Binario)");
+        Console.WriteLine("6. Leer Productos (Binario)");
+        Console.WriteLine("7. Salir");
+}
+
+void RegistrarProductos()
+{
+        if (totalProductos >= codigos.Length)
+        {
+            Console.WriteLine("No se pueden registrar más productos. Capacidad máxima alcanzada.");
+            return;
+        }
+
+        Console.WriteLine("===== REGISTRO DE PRODUCTOS =====");
+        Console.WriteLine("Ingrese el código del producto:");
+        codigos[totalProductos] = Console.ReadLine() ?? "";
+
+        if (string.IsNullOrWhiteSpace(codigos[totalProductos]))
+        {
+            Console.WriteLine("Código inválido. No puede estar vacío.");
+            return;
+        }
+
+        bool codigoExistente = false;
+
+        for (int i = 0; i < totalProductos; i++)
+        {
+            if (string.Equals(codigos[i], codigos[totalProductos], StringComparison.OrdinalIgnoreCase))
+            {
+                codigoExistente = true;
+                break;
+            }
+        }
+
+        if (codigoExistente)
+        {
+            Console.WriteLine("Código de producto ya existe.");
+            return;
+        }
+
+        Console.WriteLine("Ingrese el nombre del producto:");
+        nombres[totalProductos] = Console.ReadLine() ?? "";
+
+
+        if (string.IsNullOrWhiteSpace(nombres[totalProductos]))
+        {
+                Console.WriteLine("Nombre inválido. No puede estar vacío.");                return;
+        }
+
+        Console.WriteLine("Ingrese la cantidad del producto:");
+
+        if (!int.TryParse(Console.ReadLine(), out cantidades[totalProductos]) || cantidades[totalProductos] < 0)
+        {                Console.WriteLine("Cantidad inválida. Ingrese un número entero mayor o igual a cero.");
+            return;
+        }
+
+        totalProductos++;
+}
+void MostrarProductos()
+{
+    if (totalProductos == 0)
+    {
+        Console.WriteLine("No hay productos registrados.");
+    }
+    else
+    {
+        Console.WriteLine("===== LISTA DE PRODUCTOS =====");
+        for (int i = 0; i < totalProductos; i++)
+        {
+            Console.WriteLine($"Código: {codigos[i]}");
+            Console.WriteLine($"Nombre: {nombres[i]}");
+            Console.WriteLine($"Cantidad: {cantidades[i]}");
+            Console.WriteLine();
+        }
+    }
+}
+
+void BuscarProducto()
+{
+    Console.WriteLine("===== BÚSQUEDA DE PRODUCTO =====");
+    Console.WriteLine("Ingrese el código del producto a buscar:");
+    string codigoBusqueda = Console.ReadLine() ?? "";
+    bool encontrado = false;
+
+    for (int i = 0; i < totalProductos; i++)
+    {
+        if (string.Equals(codigos[i], codigoBusqueda, StringComparison.OrdinalIgnoreCase))
+        {
+            Console.WriteLine($"Producto encontrado:");
+            Console.WriteLine($"Código: {codigos[i]}");
+            Console.WriteLine($"Nombre: {nombres[i]}");
+            Console.WriteLine($"Cantidad: {cantidades[i]}");
+            Console.WriteLine();
+            encontrado = true;
+            break;
+        }
+    }
+
+    if (!encontrado)
+    {
+        Console.WriteLine("Producto no encontrado.");
+    }
+}
+
+void GuardarProductosCSV()
+{
+    Directory.CreateDirectory("datos");
+    using (StreamWriter writer = new StreamWriter("datos/inventario.csv"))
+    {
+        writer.WriteLine("Código,Nombre,Cantidad");
+        for (int i = 0; i < totalProductos; i++)
+        {
+            writer.WriteLine($"{codigos[i]},{nombres[i]},{cantidades[i]}");
+        }
+    }
+    Console.WriteLine("Productos guardados en inventario.csv");
+}
+
+void GuardarProductosBinario()
+{
+    Directory.CreateDirectory("datos");
+    using (BinaryWriter writer = new BinaryWriter(File.Open("datos/inventario.bin", FileMode.Create)))
+    {
+        writer.Write(totalProductos);
+        for (int i = 0; i < totalProductos; i++)
+        {
+            writer.Write(codigos[i]);
+            writer.Write(nombres[i]);
+            writer.Write(cantidades[i]);
+        }
+    }
+    Console.WriteLine("Productos guardados en inventario.bin");
+}
+
+void LeerProductosBinario()
+{
+    if (File.Exists("datos/inventario.bin"))
+    {
+        using (BinaryReader reader = new BinaryReader(File.Open("datos/inventario.bin", FileMode.Open)))
+        {
+            int totalProductosLeidos = reader.ReadInt32();
+            for (int i = 0; i < totalProductosLeidos; i++)
+            {
+                string codigoLeido = reader.ReadString();
+                Console.WriteLine($"Código: {codigoLeido}");
+                string nombreLeido = reader.ReadString();
+                Console.WriteLine($"Nombre: {nombreLeido}");
+                int cantidadLeida = reader.ReadInt32();
+                Console.WriteLine($"Cantidad: {cantidadLeida}");
+            }
+        }
+        Console.WriteLine("Productos leídos desde inventario.bin");
+    }
+    else
+    {
+        Console.WriteLine("No se encontró el archivo inventario.bin");
+    }
+}
