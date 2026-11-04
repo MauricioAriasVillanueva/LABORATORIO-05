@@ -141,7 +141,7 @@ El binario funciona como una **práctica complementaria**; el inventario princip
 
 ## 👨‍💻 Autor
 
-**Jaime Mauricio Arias Villanueva**  
+**Mauricio Arias Villanueva**  
 Estudiante de Ingeniería de Sistemas Computacionales — **Universidad Privada del Norte (UPN)**  
 Curso: **Fundamentos de Programación** · **2026**
 
